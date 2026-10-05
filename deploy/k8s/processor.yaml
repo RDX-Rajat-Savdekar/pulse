@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: processor
+  namespace: pulse
+  labels:
+    app: processor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: processor
+  template:
+    metadata:
+      labels:
+        app: processor
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+      containers:
+        - name: processor
+          image: pulse-processor:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: metrics
+              containerPort: 9102
+          envFrom:
+            - configMapRef:
+                name: pulse-config
+            - secretRef:
+                name: pulse-db
+          env:
+            - name: METRICS_ADDR
+              value: ":9102"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: processor
+  namespace: pulse
+spec:
+  selector:
+    app: processor
+  ports:
+    - name: metrics
+      port: 9102
+      targetPort: metrics

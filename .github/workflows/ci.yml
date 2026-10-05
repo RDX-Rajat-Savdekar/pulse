@@ -1,0 +1,50 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.3"
+      - run: go test ./...
+      - run: go vet ./...
+
+  images:
+    runs-on: ubuntu-latest
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cmd: ingest
+            image: pulse-ingest
+          - cmd: processor
+            image: pulse-processor
+          - cmd: query
+            image: pulse-query
+          - cmd: graphql
+            image: pulse-graphql
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          build-args: CMD=${{ matrix.cmd }}
+          tags: ${{ matrix.image }}:local
+
+  manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-kubectl@v4
+        with:
+          version: v1.31.4
+      - run: kubectl kustomize deploy >/dev/null

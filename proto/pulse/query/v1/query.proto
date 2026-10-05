@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package pulse.query.v1;
+
+option go_package = "github.com/RDX-Rajat-Savdekar/pulse/internal/querypb;querypb";
+
+// QueryService is the internal read API. The GraphQL edge is its only caller.
+service QueryService {
+  rpc GetEvent(GetEventRequest) returns (Event);
+  rpc ListEvents(ListEventsRequest) returns (ListEventsResponse);
+}
+
+message Event {
+  string id = 1;
+  string type = 2;
+  string source = 3;
+  string payload_json = 4;
+  int64 occurred_at_unix_ms = 5;
+}
+
+message GetEventRequest {
+  string id = 1;
+}
+
+message ListEventsRequest {
+  int32 limit = 1;
+}
+
+message ListEventsResponse {
+  repeated Event events = 1;
+}

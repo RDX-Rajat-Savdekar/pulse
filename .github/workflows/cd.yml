@@ -1,0 +1,28 @@
+name: cd
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-kubectl@v4
+        with:
+          version: v1.31.4
+      - name: Apply
+        env:
+          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG }}
+        run: |
+          if [ -z "$KUBECONFIG_DATA" ]; then
+            echo "Add a KUBECONFIG repository secret. Images must already be loaded in that cluster."
+            exit 1
+          fi
+          mkdir -p "$HOME/.kube"
+          printf '%s\n' "$KUBECONFIG_DATA" > "$HOME/.kube/config"
+          kubectl apply -k deploy
+          kubectl -n pulse rollout status deployment/ingest --timeout=180s
+          kubectl -n pulse rollout status deployment/processor --timeout=180s
+          kubectl -n pulse rollout status deployment/query --timeout=180s
+          kubectl -n pulse rollout status deployment/graphql --timeout=180s

@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: query
+  namespace: pulse
+  labels:
+    app: query
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: query
+  template:
+    metadata:
+      labels:
+        app: query
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+      containers:
+        - name: query
+          image: pulse-query:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: grpc
+              containerPort: 50051
+            - name: metrics
+              containerPort: 9103
+          envFrom:
+            - configMapRef:
+                name: pulse-config
+            - secretRef:
+                name: pulse-db
+          env:
+            - name: GRPC_ADDR
+              value: ":50051"
+            - name: METRICS_ADDR
+              value: ":9103"
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: metrics
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: query
+  namespace: pulse
+spec:
+  selector:
+    app: query
+  ports:
+    - name: grpc
+      port: 50051
+      targetPort: grpc
+    - name: metrics
+      port: 9103
+      targetPort: metrics

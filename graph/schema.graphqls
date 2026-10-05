@@ -1,0 +1,12 @@
+type Event {
+  id: ID!
+  type: String!
+  source: String!
+  payload: String!
+  occurredAt: String!
+}
+
+type Query {
+  event(id: ID!): Event
+  events(limit: Int): [Event!]!
+}

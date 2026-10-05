@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: pulse
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - k8s/namespace.yaml
+  - k8s/configmap.yaml
+  - k8s/secret.yaml
+  - k8s/postgres.yaml
+  - k8s/redis.yaml
+  - k8s/kafka.yaml
+  - k8s/ingest.yaml
+  - k8s/processor.yaml
+  - k8s/query.yaml
+  - k8s/graphql.yaml
+  - k8s/hpa.yaml
+  - k8s/prometheus.yaml
+  - k8s/grafana.yaml
+configMapGenerator:
+  - name: pulse-schema
+    files:
+      - 001_events.sql=migrations/001_events.sql
+  - name: prometheus-config
+    files:
+      - prometheus.yml=prometheus/prometheus.yml
+  - name: grafana-datasource
+    files:
+      - datasource.yml=grafana/provisioning/datasources/datasource.yml
+  - name: grafana-provider
+    files:
+      - dashboards.yml=grafana/provisioning/dashboards/dashboards.yml
+  - name: grafana-dashboard
+    files:
+      - pulse.json=grafana/provisioning/dashboards/pulse.json
