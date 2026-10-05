@@ -2,12 +2,19 @@ package web
 
 import (
 	"embed"
+	"io/fs"
 	"net/http"
 )
 
-//go:embed index.html app.css app.js
+// all: keeps the Astro _astro asset directory, which embed would otherwise skip.
+//
+//go:embed all:dist
 var files embed.FS
 
 func Handler() http.Handler {
-	return http.FileServer(http.FS(files))
+	sub, err := fs.Sub(files, "dist")
+	if err != nil {
+		panic(err)
+	}
+	return http.FileServer(http.FS(sub))
 }

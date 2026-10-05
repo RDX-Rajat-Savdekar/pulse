@@ -21,7 +21,7 @@ Without Docker, one process serves the console, the ingest API, and the GraphQL 
 go run ./cmd/demo
 ```
 
-Open http://127.0.0.1:8088. Send an event, then send the same id to see the dedup response. The GraphQL playground is at `/playground`.
+Open http://127.0.0.1:8088. The path across the top is the stream: a signal runs the full line when an event is accepted, and only as far as Redis when the id is a duplicate. The GraphQL playground is at `/playground`.
 
 With the full stack, the same console is served by the GraphQL process on `:8081` and forwards sends to ingest.
 

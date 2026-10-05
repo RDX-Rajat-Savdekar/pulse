@@ -1,4 +1,7 @@
-.PHONY: test vet images
+.PHONY: test vet images console
+
+console:
+	cd console && npm install && npm run build
 
 test:
 	go test ./...

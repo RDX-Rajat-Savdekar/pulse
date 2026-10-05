@@ -3,3 +3,5 @@
 deploy
 README.md
 scripts
+console/node_modules
+console/.astro

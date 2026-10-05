@@ -24,14 +24,14 @@ header {
   justify-content: space-between;
   align-items: flex-end;
   gap: 24px;
-  padding: 28px 40px 16px;
+  padding: 22px 28px 14px;
   border-bottom: 1px solid var(--rule);
 }
 
 h1, h2, p { margin: 0; }
 
 h1 {
-  font-size: 44px;
+  font-size: 40px;
   font-weight: 600;
   letter-spacing: -0.045em;
   line-height: 0.95;
@@ -39,7 +39,7 @@ h1 {
 
 header p,
 #count {
-  margin-top: 8px;
+  margin-top: 6px;
   color: var(--quiet);
 }
 
@@ -50,26 +50,64 @@ header p,
   font-variant-numeric: tabular-nums;
 }
 
-main {
+.flow {
+  position: relative;
+  height: 168px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.flow-slot { height: 168px; }
+
+.bead {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  background: var(--signal);
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.react-flow { background: transparent; }
+.react-flow__attribution { display: none; }
+.react-flow__handle { opacity: 0; pointer-events: none; }
+.react-flow__node { cursor: default; }
+
+.station {
+  width: 100%;
+  padding: 6px 0 7px;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  text-align: center;
+}
+
+.station.hot { border-bottom-color: var(--signal); }
+
+.desk {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  min-height: calc(100vh - 98px);
+  grid-template-columns: 300px 1fr;
+  min-height: calc(100vh - 250px);
 }
 
 form {
-  padding: 22px 24px 28px;
+  padding: 18px 22px 24px;
   border-right: 1px solid var(--rule);
 }
 
 h2 {
   font-size: 15px;
   font-weight: 500;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 label {
   display: block;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   font-size: 13px;
   color: var(--quiet);
 }
@@ -78,8 +116,8 @@ input,
 textarea {
   display: block;
   width: 100%;
-  margin-top: 6px;
-  padding: 8px 0;
+  margin-top: 4px;
+  padding: 6px 0;
   border: 0;
   border-bottom: 1px solid var(--rule);
   background: transparent;
@@ -99,23 +137,22 @@ textarea:focus {
 .actions {
   display: flex;
   align-items: center;
-  gap: 18px;
-  margin-top: 8px;
+  gap: 14px;
+  margin-top: 6px;
 }
 
-button {
-  font: inherit;
-  cursor: pointer;
-}
+button { font: inherit; cursor: pointer; white-space: nowrap; }
 
 button[type="submit"] {
+  flex: 0 0 auto;
   background: var(--signal);
   color: var(--sheet);
   border: 0;
-  padding: 10px 16px;
+  padding: 10px 14px;
 }
 
 #repeat {
+  flex: 0 0 auto;
   background: transparent;
   color: var(--ink);
   border: 0;
@@ -125,24 +162,20 @@ button[type="submit"] {
 
 #status {
   min-height: 1.4em;
-  margin-top: 16px;
+  margin-top: 14px;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 13px;
 }
 
-.tape { padding: 28px 0 48px; }
+.tape { padding: 18px 0 32px; }
+.tape h2, #count { padding: 0 20px; }
+#count { display: block; margin: 0 0 8px; }
 
-.tape h2 { padding: 0 22px; }
-
-ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+ol { list-style: none; margin: 0; padding: 0; }
 
 li,
 .empty {
-  padding: 12px 20px 12px 22px;
+  padding: 10px 18px 10px 20px;
   border-bottom: 1px solid var(--line);
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 13px;
@@ -150,29 +183,16 @@ li,
 }
 
 li span { display: block; }
-
-.empty {
-  color: var(--quiet);
-  border-bottom: 0;
-}
-
-li:first-child { box-shadow: inset 3px 0 0 var(--signal); }
-
+.empty { color: var(--quiet); border-bottom: 0; }
+li.newest { box-shadow: inset 3px 0 0 var(--signal); }
 .payload { color: var(--quiet); overflow-wrap: anywhere; }
 
 @media (max-width: 640px) {
-  header,
-  form,
-  .tape h2,
-  li,
-  .empty { padding-left: 20px; padding-right: 20px; }
-
-  main { grid-template-columns: 1fr; }
-
+  header, form, .tape h2, li, .empty { padding-left: 16px; padding-right: 16px; }
+  .desk { grid-template-columns: 1fr; }
   form { border-right: 0; border-bottom: 1px solid var(--rule); }
-
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * { scroll-behavior: auto; }
+  .bead { display: none; }
 }
